@@ -6,7 +6,7 @@ import os
 
 from enum import Enum
 
-from combocrypt.combocrypt import ComboCrypt
+from combocrypt import combocrypt
 
 AES_KEYSIZE = 256 # use 256-bit AES keys
 RSA_KEYSIZE = 4096 # use 4096-bit RSA keys
@@ -350,7 +350,7 @@ class DecryptStatus(Enum):
 	writing = 6 # {output_file}
 	done = 7 # {}
 
-def do_generate(combocrypt, output_file):
+def do_generate(output_file):
 	privkey_file = output_file + PRIVATE_KEY_EXTENSION
 	pubkey_file = output_file + PUBLIC_KEY_EXTENSION
 
@@ -366,17 +366,17 @@ def do_generate(combocrypt, output_file):
 	pubkey = privkey.publickey()
 
 	yield GenerateStatus.writing, {"private_key_file": privkey_file, "public_key_file": pubkey_file}
-	ComboCrypt.save_rsa_key(privkey, privkey_file)
-	ComboCrypt.save_rsa_key(pubkey, pubkey_file)
+	combocrypt.save_rsa_key(privkey, privkey_file)
+	combocrypt.save_rsa_key(pubkey, pubkey_file)
 
 	yield GenerateStatus.done, {}
 
-def do_encrypt(combocrypt, key_file, input_file, output_file):
+def do_encrypt(key_file, input_file, output_file):
 	yield EncryptStatus.loading, {"key_file": key_file}
-	pubkey = ComboCrypt.load_rsa_key(key_file)
+	pubkey = combocrypt.load_rsa_key(key_file)
 
 	yield EncryptStatus.encrypting, {"input_file": input_file}
-	encrypted = combocrypt.combo_encrypt_file(input_file, pubkey)
+	encrypted = combocrypt.combo_encrypt_file_json(input_file, pubkey)
 
 	yield EncryptStatus.writing, {"output_file": output_file}
 	with open(output_file, "w") as writer:
@@ -384,7 +384,7 @@ def do_encrypt(combocrypt, key_file, input_file, output_file):
 
 	yield EncryptStatus.done, {}
 
-def do_decrypt(combocrypt, key_file, input_file, output_file):
+def do_decrypt(key_file, input_file, output_file):
 	multikey_mode = os.path.isdir(key_file)
 
 	key_files = []
@@ -404,11 +404,11 @@ def do_decrypt(combocrypt, key_file, input_file, output_file):
 	decrypted = None
 	for key_file in key_files:
 		yield DecryptStatus.loading, {"key_file": key_file}
-		privkey = ComboCrypt.load_rsa_key(key_file)
+		privkey = combocrypt.load_rsa_key(key_file)
 
 		yield DecryptStatus.decrypting, {"input_file": input_file}
 		try:
-			decrypted = combocrypt.combo_decrypt_file(input_file, privkey)
+			decrypted = combocrypt.combo_decrypt_file_json(input_file, privkey)
 			break
 		except ValueError:
 			if multikey_mode:
@@ -431,10 +431,8 @@ def do_decrypt(combocrypt, key_file, input_file, output_file):
 def main():
 	process_args()
 
-	combocrypt = ComboCrypt(AES_KEYSIZE, RSA_KEYSIZE)
-
 	if arg_mode == Mode.generate:
-		for status, values in do_generate(combocrypt, arg_output_file):
+		for status, values in do_generate(arg_output_file):
 			if status == GenerateStatus.error_duplicate_key:
 				key_type = values["key_type"]
 				key_file = values["key_file"]
@@ -459,7 +457,7 @@ def main():
 				print("warning: never share your private key file! anyone in possession of your private key can read messages meant for you!")
 
 	elif arg_mode == Mode.encrypt:
-		for status, values in do_encrypt(combocrypt, arg_key_file, arg_input_file, arg_output_file):
+		for status, values in do_encrypt(arg_key_file, arg_input_file, arg_output_file):
 			if status == EncryptStatus.loading:
 				key_file = values["key_file"]
 				print("loading RSA key from '" + key_file + "'...")
@@ -477,7 +475,7 @@ def main():
 				print("done!")
 
 	elif arg_mode == Mode.decrypt:
-		for status, values in do_decrypt(combocrypt, arg_key_file, arg_input_file, arg_output_file):
+		for status, values in do_decrypt(arg_key_file, arg_input_file, arg_output_file):
 			if status == DecryptStatus.error_multikey_empty:
 				key_file = values["key_file"]
 
