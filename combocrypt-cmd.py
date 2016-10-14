@@ -6,7 +6,7 @@ import os
 
 from enum import Enum
 
-from combocrypt import ComboCrypt
+from combocrypt.combocrypt import ComboCrypt
 
 AES_KEYSIZE = 256 # use 256-bit AES keys
 RSA_KEYSIZE = 4096 # use 4096-bit RSA keys
@@ -57,7 +57,7 @@ def get_unique_name():
 	return short_uuid
 
 def print_help_message():
-	print("combocrypt.py (--mode (generate | encrypt | decrypt) | -g | -e | -d) [(--key | -k) <key file>] [(--input | -i) <input file>] [(--output | -o) <output file>]")
+	print("combocrypt-cmd.py (--mode (generate | encrypt | decrypt) | -g | -e | -d) [(--key | -k) <key file>] [(--input | -i) <input file>] [(--output | -o) <output file>]")
 
 	print()
 	print()
@@ -67,9 +67,9 @@ def print_help_message():
 	print()
 	print("randomly generate a new RSA keypair, optionally specifying where to save the generated keys")
 	print()
-	print("combocrypt.py (--mode generate | -g) [(--output | -o) <output file>]")
+	print("combocrypt-cmd.py (--mode generate | -g) [(--output | -o) <output file>]")
 	print()
-	print("ex.: combocrypt.py --mode generate --output mykey")
+	print("ex.: combocrypt-cmd.py --mode generate --output mykey")
 	print()
 	print("example generates a keypair and saves them to 'mykey.privkey' and 'mykey.pubkey' in the local directory")
 
@@ -81,9 +81,9 @@ def print_help_message():
 	print()
 	print("encrypt a specified file with the specified recipient's public key, optionally specifying where to save the encrypted file (defaults to local directory, input file with .enc appended)")
 	print()
-	print("combocrypt.py (--mode encrypt | -e) (--key | -k) <key file> (--input | -i) <input file> [(--output | -o) <output file>]")
+	print("combocrypt-cmd.py (--mode encrypt | -e) (--key | -k) <key file> (--input | -i) <input file> [(--output | -o) <output file>]")
 	print()
-	print("ex.: combocrypt.py --mode encrypt --key mykey.pubkey -i secretfiles.zip -o supersecret.zip.enc")
+	print("ex.: combocrypt-cmd.py --mode encrypt --key mykey.pubkey -i secretfiles.zip -o supersecret.zip.enc")
 	print()
 	print("example encrypts 'secretfiles.zip' in the local directory with the public key 'mykey.pubkey', outputting the result to 'supersecret.zip.enc'")
 
@@ -93,18 +93,18 @@ def print_help_message():
 
 	print("Decryption Mode:")
 	print()
-	print("decrypt a file previously encrypted by combocrypt.py, using the specified recipient's private key, optionally specifying where to save the decrypted file")
+	print("decrypt a file previously encrypted by combocrypt-cmd.py, using the specified recipient's private key, optionally specifying where to save the decrypted file")
 	print()
-	print("combocrypt.py (--mode decrypt | -d) (--key | -k) <key file> (--input | -i) <input file> [(--output | -o) <output file>]")
+	print("combocrypt-cmd.py (--mode decrypt | -d) (--key | -k) <key file> (--input | -i) <input file> [(--output | -o) <output file>]")
 	print()
-	print("ex.: combocrypt.py --mode decrypt --key mykey.privkey -i supersecret.zip.enc -o decrypted.zip")
+	print("ex.: combocrypt-cmd.py --mode decrypt --key mykey.privkey -i supersecret.zip.enc -o decrypted.zip")
 	print()
 	print("example decrypts the already-encrypted file 'supersecret.zip.enc' with the private key 'mykey.privkey', outputting the result to 'decrypted.zip'")
 
 	sys.exit(0)
 
 def print_usage_string():
-	print("combocrypt.py (--mode (generate | encrypt | decrypt) | -g | -e | -d) [(--key | -k) <key file>] [(--input | -i) <input file>] [(--output | -o) <output file>]")
+	print("combocrypt-cmd.py (--mode (generate | encrypt | decrypt) | -g | -e | -d) [(--key | -k) <key file>] [(--input | -i) <input file>] [(--output | -o) <output file>]")
 	print()
 	print("for more info, use --help")
 
