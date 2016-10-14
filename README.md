@@ -3,12 +3,13 @@ ComboCrypt is a high-strength asymmetrical encryption scheme
 
 combocrypt-cmd provides a command-line tool to encrypt/decrypt files with ComboCrypt
 
-### How to clone:
+### Cloning
 ```
 git clone --recursive https://github.com/samrankin1/combocrypt-cmd.git
 ```
 
-### Basic Usage Tutorial
+&nbsp;
+### Usage Tutorial
 
 #### Generating keys:
 Before sending or receiving encrypted files, one must generate a personal key pair.
