@@ -1,0 +1,3 @@
+[submodule "combocrypt"]
+	path = combocrypt
+	url = git@github.com:samrankin1/combocrypt.git
